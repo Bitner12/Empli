@@ -1,4 +1,5 @@
 using Empli.Domian;
+using Empli.Exstensions;
 using Empli.Infrastructure;
 using Empli.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,22 +28,8 @@ builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints()
     .AddDefaultTokenProviders();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-     .AddJwtBearer(o =>
-     {
 
-         o.TokenValidationParameters = new TokenValidationParameters()
-         {
-             ValidateIssuer = false,
-             ValidateAudience = false,
-             ValidateLifetime = true,
-             ValidateIssuerSigningKey = true,
-             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AuthSettings:Key"]!)),
-             ClockSkew = TimeSpan.Zero
-         };
-     });
-     
-builder.Services.AddAuthorization();
+builder.Services.AddAuth(builder.Configuration);
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -79,7 +66,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

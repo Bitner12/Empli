@@ -11,8 +11,14 @@ using System.Text.Json;
 
 namespace Empli.Infrastructure.Identity
 {
-    public class TokenService(IOptions<AuthSettings> options) : ITokenService
+    public class TokenService : ITokenService
     {
+        private readonly byte[] _key;
+        public TokenService(IOptions<AuthSettings> options)
+        {
+            _key = Encoding.UTF8.GetBytes(options.Value.Key);
+        }
+
         public string GenerateToken(User user)
         {
             var claims = new List<Claim>
@@ -21,19 +27,15 @@ namespace Empli.Infrastructure.Identity
                 new Claim("userName",user.UserName),
             };
 
-            var jwtToken = new JwtSecurityToken(
-               expires: DateTime.UtcNow.AddMinutes(1),
-               claims: claims,
-               signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.Key)), SecurityAlgorithms.HmacSha256));
-            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            var jwtToken = Create(claims);
 
+            return new JwtSecurityTokenHandler().WriteToken(jwtToken);
         }
         public RefreshToken GenerateRefreshToken(User user)
         {
             var token = RandomNumberGenerator.GetBytes(64);
 
-            var expires = DateTime.UtcNow.AddDays(7);
-            
+            var expires = DateTime.UtcNow.AddDays(7);            
 
             var refreshToken = new RefreshToken()
             {
@@ -41,7 +43,16 @@ namespace Empli.Infrastructure.Identity
                 Expires = expires
             };
 
-            return (refreshToken);
+            return refreshToken;
+        }
+
+        private JwtSecurityToken Create(IEnumerable<Claim> claims) 
+        {
+            return new JwtSecurityToken(
+               expires: DateTime.UtcNow.AddMinutes(1),
+               claims: claims,
+               signingCredentials: new SigningCredentials(
+                   new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256));
         }
     }
 }
