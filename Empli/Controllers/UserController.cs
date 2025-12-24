@@ -1,11 +1,8 @@
 ﻿
 using Empli.Aplication;
-using Empli.Domian;
-using Empli.Infrastructure;
+using Empli.Aplication.Interfaces;
 using Empli.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 //Винести логику по созданию токенов в отдельный сервис.
 //Винести логику по работе с пользователями в отдельный сервис.
 //В ЮзерСервисе сделать метод гет юзер.
@@ -17,53 +14,28 @@ namespace Empli.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly ITokenService _jwtService;
         
-        public UserController(UserManager<User> userManager,
-            ITokenService jwtService)
-
+        private readonly IUserService _userService ;
+        private readonly TokenService _tokenService ;
+        public UserController(IUserService userService, TokenService tokenService)
         {
-            _jwtService = jwtService;
-            _userManager = userManager;
-            
+            _userService = userService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            var user = new User { UserName = registerRequest.Email, Email = registerRequest.Email };
-            var userWithToken = GenerateRefreshToken(user);
-            var acsessToken = _jwtService.GenerateToken(userWithToken);
-
-            var result = await _userManager.CreateAsync(user, registerRequest.Password);
-            var errors = result.Errors?.FirstOrDefault()?.Description;
-
-            if (!string.IsNullOrEmpty(errors)) 
-            {
-                return BadRequest(errors);
-            }
-
+            var user = await _userService.CreateUser(registerRequest.Email, registerRequest.Password);
+            var acsessToken = _tokenService.GenerateToken(user);
             return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, acsessToken));
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email.ToLowerInvariant());
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-            var checkPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
-            if (!checkPassword)
-            {
-                return Unauthorized();
-            }
-            var token = _jwtService.GenerateToken(user);
-            user = GenerateRefreshToken(user);
-            await _userManager.UpdateAsync(user);
-
+            var user = await _userService.GetUser(loginRequest.Email , loginRequest.Password);
+            var token = _tokenService.GenerateToken(user);
 
             return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, token));
         }
@@ -88,13 +60,7 @@ namespace Empli.Controllers
 
         }
 
-        private User GenerateRefreshToken(User user)
-        {
-            var newRefreshToken = _jwtService.GenerateRefreshToken(user);
-            user.RefreshToken = newRefreshToken.Token;
-            user.Expires = newRefreshToken.Expires;
-            return user;
-        }
+       
     }
 
 }

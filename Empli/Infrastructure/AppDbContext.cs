@@ -1,4 +1,4 @@
-﻿using Empli.Domian;
+﻿using Empli.Domain;
 using Empli.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

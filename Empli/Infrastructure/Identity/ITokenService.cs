@@ -1,4 +1,4 @@
-﻿using Empli.Domian;
+﻿using Empli.Domain;
 
 namespace Empli.Infrastructure.Identity
 {

@@ -1,4 +1,4 @@
-﻿using Empli.Domian;
+﻿using Empli.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;

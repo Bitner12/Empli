@@ -1,4 +1,4 @@
-using Empli.Domian;
+using Empli.Domain;
 using Empli.Exstensions;
 using Empli.Infrastructure;
 using Empli.Infrastructure.Identity;
