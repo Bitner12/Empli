@@ -17,19 +17,15 @@ namespace Empli.Aplication
             _userManager = userManager;
         }
 
-        public async Task<User> CreateUser(string email, string password)
+        public async Task<(User?,IdentityResult)> CreateUser(string email, string password)
         {
             var user = new User { UserName = email, Email = email };
             var refreshToken = _tokenService.GenerateRefreshToken(user);
             user.RefreshToken = refreshToken.Token;
             user.Expires = refreshToken.Expires;
             var result = await _userManager.CreateAsync(user, password);
-            var errors = result.Errors?.FirstOrDefault()?.Description;
-            if (!string.IsNullOrEmpty(errors))
-            {
-               throw new Exception(errors);
-            }
-            return user;
+            
+            return (result.Succeeded? user : null, result);
         }
 
 

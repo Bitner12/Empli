@@ -16,8 +16,8 @@ namespace Empli.Controllers
     {
         
         private readonly IUserService _userService ;
-        private readonly TokenService _tokenService ;
-        public UserController(IUserService userService, TokenService tokenService)
+        private readonly ITokenService _tokenService ;
+        public UserController(IUserService userService, ITokenService tokenService)
         {
             _userService = userService;
             _tokenService = tokenService;
@@ -26,8 +26,13 @@ namespace Empli.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequest registerRequest)
         {
-            var user = await _userService.CreateUser(registerRequest.Email, registerRequest.Password);
+            var (user,result) = await _userService.CreateUser(registerRequest.Email, registerRequest.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
             var acsessToken = _tokenService.GenerateToken(user);
+
             return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, acsessToken));
         }
 
@@ -40,27 +45,27 @@ namespace Empli.Controllers
             return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, token));
         }
 
-        [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken(RefreshRequest refreshRequest)
-        {
-            var user = await _userManager.FindByIdAsync(refreshRequest.UserId);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-            if (user.Expires < DateTime.UtcNow || user.RefreshToken != refreshRequest.RefreshToken)
-            {
-                return Unauthorized();
-            }
-            var newAccessToken = _jwtService.GenerateToken(user);
-            user = GenerateRefreshToken(user);
-            await _userManager.UpdateAsync(user);
+        //[HttpPost("refresh")]
+        //public async Task<IActionResult> RefreshToken(RefreshRequest refreshRequest)
+        //{
+        //    var user = await _userManager.FindByIdAsync(refreshRequest.UserId);
+        //    if (user == null)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    if (user.Expires < DateTime.UtcNow || user.RefreshToken != refreshRequest.RefreshToken)
+        //    {
+        //        return Unauthorized();
+        //    }
+        //    var newAccessToken = _jwtService.GenerateToken(user);
+        //    user = GenerateRefreshToken(user);
+        //    await _userManager.UpdateAsync(user);
 
-            return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, newAccessToken));
+        //    return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, newAccessToken));
 
-        }
+        //}
 
-       
+
     }
 
 }
