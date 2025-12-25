@@ -1,4 +1,4 @@
-﻿namespace Empli.Aplication
+﻿namespace Empli.Aplication.Models
 {
     public class RefreshRequest
     {

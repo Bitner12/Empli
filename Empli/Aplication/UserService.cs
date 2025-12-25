@@ -1,8 +1,8 @@
 ﻿using Empli.Aplication.Interfaces;
+using Empli.Aplication.Models;
 using Empli.Domain;
 using Empli.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 
 namespace Empli.Aplication
 {
@@ -14,7 +14,7 @@ namespace Empli.Aplication
         public UserService(ITokenService tokenService, UserManager<User> userManager)
         {
             _tokenService = tokenService;
-            _userManager = userManager;
+            _userManager = userManager;       
         }
 
         public async Task<(User?,IdentityResult)> CreateUser(string email, string password)
@@ -29,30 +29,50 @@ namespace Empli.Aplication
         }
 
 
-        public async Task<User> GetUser(string email, string password)
+        public async Task<User> GetUser(string id)
         {
-            var user = await _userManager.FindByEmailAsync(email.ToLowerInvariant());
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
-               throw new UnauthorizedAccessException();
+                return null;
             }
-            var checkPassword = await _userManager.CheckPasswordAsync(user, password);
-            if (!checkPassword)
-            {
-                throw new UnauthorizedAccessException();
-            }
-            
-            var newRefreshToken = _tokenService.GenerateRefreshToken(user);
-            user.RefreshToken = newRefreshToken.Token;
-            user.Expires = newRefreshToken.Expires;
-            await _userManager.UpdateAsync(user);
 
             return user;
         }
 
-        public async Task<User> GetUserById(string id)
+        public async Task<Result<User>> Login(string email ,string password)
         {
-            return null;
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Result<User>.Failure("User not found");
+            }
+
+            var chekPassword = await _userManager.CheckPasswordAsync(user, password);
+            if(chekPassword == false)
+            {
+                return Result<User>.Failure("Неверный пароль");
+            }
+
+            return Result<User>.Success(user);
+
+        }
+        public async Task<Result<User>> RefreshUser (string id , string refresh)
+        {
+            var user = await GetUser(id);
+            if (user == null)
+            {
+                return Result<User>.Failure("User not found");
+            }
+            if (user.Expires < DateTime.UtcNow || user.RefreshToken != refresh)
+            {
+                return Result<User>.Failure("Token is invalid");
+            }
+            var newRefresh = _tokenService.GenerateRefreshToken(user);
+            user.RefreshToken = newRefresh.Token;
+            user.Expires = newRefresh.Expires;
+            await _userManager.UpdateAsync(user);
+            return Result<User>.Success(user);
         }
     }
 }

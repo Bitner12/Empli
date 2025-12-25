@@ -1,6 +1,5 @@
-﻿
-using Empli.Aplication;
-using Empli.Aplication.Interfaces;
+﻿using Empli.Aplication.Interfaces;
+using Empli.Aplication.Models;
 using Empli.Infrastructure.Identity;
 using Microsoft.AspNetCore.Mvc;
 //Винести логику по созданию токенов в отдельный сервис.
@@ -39,31 +38,31 @@ namespace Empli.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest loginRequest)
         {
-            var user = await _userService.GetUser(loginRequest.Email , loginRequest.Password);
-            var token = _tokenService.GenerateToken(user);
+            var result = await _userService.Login(loginRequest.Email, loginRequest.Password);
+            if (!result.IsSuccess)
+            {
+                return NotFound(result.Error);
+            }
+            var token = _tokenService.GenerateToken(result.Value);
 
-            return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, token));
+            return Ok(new LoginResponse(result.Value.Id, result.Value.Email, result.Value.RefreshToken, token));
         }
 
-        //[HttpPost("refresh")]
-        //public async Task<IActionResult> RefreshToken(RefreshRequest refreshRequest)
-        //{
-        //    var user = await _userManager.FindByIdAsync(refreshRequest.UserId);
-        //    if (user == null)
-        //    {
-        //        return Unauthorized();
-        //    }
-        //    if (user.Expires < DateTime.UtcNow || user.RefreshToken != refreshRequest.RefreshToken)
-        //    {
-        //        return Unauthorized();
-        //    }
-        //    var newAccessToken = _jwtService.GenerateToken(user);
-        //    user = GenerateRefreshToken(user);
-        //    await _userManager.UpdateAsync(user);
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken(RefreshRequest refreshRequest)
+        {
 
-        //    return Ok(new LoginResponse(user.Id, user.Email, user.RefreshToken, newAccessToken));
+            var refreshUser = await _userService.RefreshUser(refreshRequest.UserId, refreshRequest.RefreshToken);
+            if (!refreshUser.IsSuccess)
+            {
+                return Unauthorized(refreshUser.Error);
+            }
+            var newAccessToken = _tokenService.GenerateToken(refreshUser.Value);
 
-        //}
+            return Ok(new LoginResponse(refreshUser.Value.Id, refreshUser.Value.Email, refreshUser.Value.RefreshToken, 
+                newAccessToken));
+
+        }
 
 
     }
