@@ -8,7 +8,7 @@ namespace Empli.Aplication.Interfaces
     {
         Task<(User, IdentityResult)> CreateUser(global::System.String email, global::System.String password);
         Task<User> GetUser(global::System.String id);
-        Task<Result<User>> Login (global::System.String id, string password);
-        Task<Result<User>> RefreshUser(string id, string refresh);
+        Task<User?> Login (global::System.String id, string password);
+        Task<User> RefreshUser(string id, string refresh);
     }
 }

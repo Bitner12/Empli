@@ -40,21 +40,21 @@ namespace Empli.Aplication
             return user;
         }
 
-        public async Task<Result<User>> Login(string email ,string password)
+        public async Task<User?> Login(string email ,string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var  user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return Result<User>.Failure("User not found");
+                return null;
             }
 
             var chekPassword = await _userManager.CheckPasswordAsync(user, password);
             if(chekPassword == false)
             {
-                return Result<User>.Failure("Неверный пароль");
+                return null;
             }
 
-            return Result<User>.Success(user);
+            return user;
 
         }
         public async Task<Result<User>> RefreshUser (string id , string refresh)
