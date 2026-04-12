@@ -28,14 +28,23 @@ namespace Infrastructures.Repositories
             await _appDbcontext.SaveChangesAsync();
             return hourRequest;
         }
-        public async Task<int> Delete(int id, DateTime date)
+
+        public async Task<List<Hour>> Get(Guid workerId)
         {
-            await _appDbcontext.Hours
-                .Where(h => h.WorkerId == id && h.Date == date)
-                .ExecuteDeleteAsync();
-            return id;
+           return await  _appDbcontext.Hours
+                .Where(h => h.WorkerId == workerId)
+                .ToListAsync();
         }
-        public async Task<int> Update(int id, float hours, DateTime date)
+
+        public async Task<List<Hour>> GetByDate(Guid workerId, DateTime startDate, DateTime endDate)
+        {
+            return await   _appDbcontext.Hours
+                .Where(h => h.WorkerId == workerId)
+                .Where(h => h.Date >= startDate && h.Date <= endDate)
+                .ToListAsync();
+        }
+        
+        public async Task<Guid> Update(Guid id, float hours, DateTime date)
         {
             await _appDbcontext.Hours
                 .Where(h => h.WorkerId == id && h.Date == date)
@@ -43,6 +52,14 @@ namespace Infrastructures.Repositories
                 .SetProperty(h => h.Hours, hours));
                 
 
+            return id;
+        }
+        
+        public async Task<Guid> Delete(Guid id, DateTime date)
+        {
+            await _appDbcontext.Hours
+                .Where(h => h.WorkerId == id && h.Date == date)
+                .ExecuteDeleteAsync();
             return id;
         }
        

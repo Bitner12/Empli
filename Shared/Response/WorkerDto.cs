@@ -4,9 +4,11 @@ namespace Shared.Response
 {
     public class WorkerDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string FirstName { get; set; }
+        
+        public string LastName { get; set; }
 
         public decimal CostPerHour { get; set; }
 

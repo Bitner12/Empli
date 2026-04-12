@@ -5,8 +5,10 @@ namespace Domain.Abstractions.Interfaces.Repositories
 {
     public interface IHourRepository
     {
-        Task<Hour> Create(HourRequest hour); //TODO:  Інтерфейси повинні бути в папці Abstracts або Interfaces, а не в папці Repositories. Це дозволить розділити абстракції від реалізацій.
-        Task<int> Delete(int id, DateTime date);
-        Task<int> Update(int id, float hours, DateTime date);
+        Task<Hour> Create(HourRequest hour); 
+        Task<List<Hour>> Get(Guid workerId);
+        Task<List<Hour>> GetByDate(Guid workerId, DateTime startDate, DateTime endDate);
+        Task<Guid> Delete(Guid id, DateTime date);
+        Task<Guid> Update(Guid id, float hours, DateTime date);
     }
 }

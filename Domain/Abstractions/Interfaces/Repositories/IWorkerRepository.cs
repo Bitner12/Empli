@@ -6,11 +6,11 @@ namespace Domain.Abstractions.Interfaces.Repositories
 {
     public interface IWorkerRepository
     {
-        Task <Worker> Create(WorkerRequest worker);
-        Task <int> Delete(int id);
-        Task<List<Worker>> GetAllAsync();
-        Task<Worker> GetById(int id);
+        Task <Worker> Create(Worker worker);
+        Task <Guid> Delete(Guid id);
+        Task<List<Worker>> GetAllAsync(Guid companyId);
+        Task<Worker> GetById(Guid id);
         Task <List<Worker>> GetWorkersWithHours(string search, DateTime? startDate, DateTime? endDate);
-        Task <int> Update(int id, string name, decimal costPerHour);
+        Task <Worker> Update(Worker worker);
     }
 }

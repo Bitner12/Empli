@@ -1,0 +1,11 @@
+@WebApplication1_HostAddress = http://localhost:7275
+GET {{WebApplication1_HostAddress}}/workercontrollers/
+Accept: application/json
+
+
+###
+
+
+
+
+

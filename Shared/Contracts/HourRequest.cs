@@ -1,4 +1,4 @@
-﻿using WebApplication1.Enties;
+﻿
 
 namespace Shared.Contracts
 {
@@ -6,7 +6,7 @@ namespace Shared.Contracts
     {
         public DateTime Date { get; set; }
         public float Hours { get; set; }
-        public int WorkerId { get; set; }
+        public Guid WorkerId { get; set; }
 
     }
 }
