@@ -1,0 +1,57 @@
+﻿services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_dev
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: my_project_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Empli.Manager/Dockerfile
+    container_name: empli_api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DisableHttpsRedirection: "true"
+      ConnectionStrings__psql: Host=db;Port=5432;Database=my_project_db;Username=admin;Password=password123;Ssl Mode=Disable;
+    ports:
+      - "5275:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./empli-client
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:5275
+    container_name: empli_web
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_dev
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

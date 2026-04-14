@@ -40,6 +40,7 @@ namespace Infrastructures.Identity
 
             var refreshToken = new RefreshToken()
             {
+                UserId =  user.Id,
                 Token = Convert.ToBase64String(token),
                 Expires = expires
             };
@@ -50,7 +51,7 @@ namespace Infrastructures.Identity
         private JwtSecurityToken Create(IEnumerable<Claim> claims) 
         {
             return new JwtSecurityToken(
-               expires: DateTime.UtcNow.AddMinutes(1),
+               expires: DateTime.UtcNow.AddMinutes(10),
                claims: claims,
                signingCredentials: new SigningCredentials(
                    new SymmetricSecurityKey(_key), SecurityAlgorithms.HmacSha256));

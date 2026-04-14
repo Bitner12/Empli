@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.Build.NoTargets/3.7.56">
+  <!--
+    Маркер проекта для Visual Studio / решения: исходники React остаются в этой папке,
+    MSBuild не компилирует C#. Сборка фронта: npm run build (см. README в каталоге).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+</Project>

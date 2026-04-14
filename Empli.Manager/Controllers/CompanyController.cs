@@ -26,28 +26,33 @@ namespace Empli.Manager.Controllers
         _userService = userService;
     }
 
-    [HttpPost]
+    [HttpPost("create")]
     public async Task<IActionResult> CreateCompany([FromBody] CompanyRequest companyRequest)
-    {
+    { 
         var userId = JwtParser.GetUserIdFromHttpContext(HttpContext);
         
         var user = await _userService.GetUser(userId);
-        
-        var company = await _companyService.CreateCompany(companyRequest, user);
+            if (user.UserType != 0) 
+            {
+                return BadRequest("Profile has already been created.");
+            }
+
+
+            var company = await _companyService.CreateCompany(companyRequest.Name,companyRequest.Nip,userId,user);
         if (company == null)
         {
             return BadRequest();
         }
-        var updateUser = await _userService.UpdateUser( user , UserType.Company);
-        if (updateUser == null)
-        {
-            return BadRequest("Profile has already been created.");
-        }
+            var updateUser = await _userService.UpdateUser(user, UserType.Company, company.Id, company, null);
+            if (updateUser == null)
+            {
+                return BadRequest("Profile has already been created.");
+            }
 
-        return Ok(new CompanyResponse{Id = company.Id , Name = company.Name , Nip = company.Nip});
+            return Ok(new CompanyResponse{Id = company.Id , Name = company.Name , Nip = company.Nip});
     }
 
-    [HttpGet]
+    [HttpGet("get")]
     public async Task<IActionResult> GetCompany()
     {
         var userId = JwtParser.GetUserIdFromHttpContext(HttpContext);
@@ -63,10 +68,11 @@ namespace Empli.Manager.Controllers
     }
 
 
-    [HttpPut]
+    [HttpPut("update")]
     public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyRequest companyRequest)
     {
-        await _companyService.UpdateCompany(companyRequest.UserId,companyRequest.Name,companyRequest.Nip);
+        var userId = JwtParser.GetUserIdFromHttpContext(HttpContext);
+        await _companyService.UpdateCompany(userId,companyRequest.Name,companyRequest.Nip);
         return Ok();
     }
     

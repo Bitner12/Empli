@@ -1,10 +1,13 @@
-﻿using Application.Abstratctions;
+using Application.Abstratctions;
+using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts;
 using Shared.Response;
 
 namespace Empli.Manager.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
 
@@ -20,24 +23,36 @@ namespace Empli.Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateHour([FromBody] HourRequest hour)
         {
-            
-            await _hourService.CreateHour(hour);
             if (hour == null)
             {
                 return BadRequest("Hour is null");
             }
-            
+
+            try
+            {
+                await _hourService.CreateHour(hour);
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message == HourService.DuplicateCalendarDayMessage)
+                {
+                    return Conflict(ex.Message);
+                }
+
+                return BadRequest(ex.Message);
+            }
+
             return Ok(new HourDto{Date = hour.Date, Hours = hour.Hours, Id = hour.WorkerId});
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllHours(Guid workerId)
         {
             var hours = await _hourService.GetAllHours(workerId);
             return Ok(hours);
         }
        
-        [HttpGet]
+        [HttpGet("period")]
         public async Task<IActionResult> GetHoursPeriod(Guid id, DateTime dateStart, DateTime dateEnd)
         {
             if (dateEnd < dateStart)
@@ -53,12 +68,14 @@ namespace Empli.Manager.Controllers
         [HttpPatch]
         public async Task<ActionResult<HourDto>> UpdateHour(Guid id , float hour , DateTime date)
         {
-   
-            if (hour == null)
+            try
             {
-                return BadRequest("Not found");
+                await _hourService.UpdateHour(id, hour, date);
             }
-            await _hourService.UpdateHour(id, hour, date);
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
             

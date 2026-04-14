@@ -8,4 +8,5 @@ public interface ICompanyRepository
     Task<Company> Get(string userId);
     Task<Company> Update(Company company);
     Task<Guid> Delete(Guid companyId);
+    Task<Company> ByNip(string nip);
 }

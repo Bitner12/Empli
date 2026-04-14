@@ -1,4 +1,4 @@
-﻿using Application.Abstratctions;
+using Application.Abstratctions;
 using Domain.Abstractions.Interfaces.Repositories;
 using Domain.Entities;
 using Shared.Contracts;
@@ -9,24 +9,40 @@ namespace Application.Services
     public class WorkerService : IWorkerService
     {
         private readonly IWorkerRepository _workerRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public WorkerService(IWorkerRepository workerRepository)
+        public WorkerService(IWorkerRepository workerRepository, IEmployeeRepository employeeRepository)
         {
             _workerRepository = workerRepository;
+            _employeeRepository = employeeRepository;
         }
 
-        public async Task<Worker> CreatWorker(WorkerRequest workerRequest,  Guid companyId)
+        public async Task<Worker> CreatWorker(string pesel,string firstName, string lastName, decimal? costPerHour)
         {
-            var workerEntity = new Worker()
+            var checkWorker =  await _workerRepository.GetWorkerByPesel(pesel);
+            if ( checkWorker == null)
             {
-                CompanyId = companyId,
-                FirstName = workerRequest.FirstName,
-                LastName = workerRequest.LastName,
-                CostPerHour = workerRequest.CostPerHour
+               var workerEntity =  new Worker()
+               {
+                   
+                   Pesel = pesel,
+                   FirstName = firstName,
+                   LastName = lastName,
+                   CostPerHour = costPerHour,
+               };
+                return await _workerRepository.Create(workerEntity);
+            }
             
-            };
-            
-            return await _workerRepository.Create(workerEntity);
+            return checkWorker;
+        }
+
+      
+
+
+        public async Task<Worker> GetByPesel(string pesel)
+        {
+
+            return await _workerRepository.GetWorkerByPesel(pesel);
         }
 
         public async Task<Worker> GetById(Guid id)
@@ -56,7 +72,13 @@ namespace Application.Services
 
         public async Task<Guid> DeleteWorker(Guid id)
         {
-            return await _workerRepository.Delete(id);
+            if (await _employeeRepository.AnyEmployeeForWorkerIdAsync(id))
+            {
+                await _workerRepository.UnlinkFromCompanyAsync(id);
+                return id;
+            }
+
+            return await _workerRepository.DeleteWorkerAndHoursAsync(id);
         }
         
         
@@ -82,8 +104,8 @@ namespace Application.Services
                     Date = h.Date,
                     Hours = h.Hours
                 }).ToList(),
-                TotalHours = (decimal)w.Hours.Sum(h => h.Hours),
-                TotalCost = (decimal)w.Hours.Sum(h => h.Hours) * w.CostPerHour
+                TotalHours = w.Hours.Sum(h => h.Hours),
+                TotalCost = (decimal)((decimal)w.Hours.Sum(h => h.Hours) * w.CostPerHour)
             }).ToList();
 
             

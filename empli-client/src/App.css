@@ -1,0 +1,311 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.85rem;
+  margin-bottom: 1.35rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+
+.auth-card {
+  max-width: 440px;
+  margin: 2.5rem auto;
+}
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.75rem;
+  align-items: start;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Text-like inputs: bare <input> has no [type] in DOM, so it never matched [type="text"] */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+input[type='tel'],
+input[type='url'],
+input[type='search'],
+input:not([type]),
+textarea,
+select {
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.35;
+  width: 100%;
+  max-width: 100%;
+  min-height: 2.5rem;
+}
+
+textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+select {
+  cursor: pointer;
+}
+
+.row.gap > label > input:not([type='radio']):not([type='checkbox']),
+.row.gap > label > select,
+.row.gap > label > textarea {
+  width: auto;
+  min-width: 9.5rem;
+}
+
+input:not([type='radio']):not([type='checkbox']):focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+input:not([type='radio']):not([type='checkbox']):disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  filter: brightness(1.08);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.wide {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: transparent;
+}
+
+.row {
+  display: flex;
+  align-items: flex-end;
+}
+
+.row.gap {
+  gap: 1.35rem;
+}
+
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.filter-bar {
+  margin: 1.35rem 0;
+}
+
+.segmented {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  background: var(--input-bg);
+}
+
+.radio-inline {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1.5rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.65rem 0.65rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.data-table th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.data-table input[type='text'],
+.data-table input[type='number'],
+.data-table input:not([type]) {
+  width: 100%;
+  max-width: 140px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 0.85rem;
+}
+
+fieldset {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.card-heading {
+  margin-top: 0;
+  font-size: 1.15rem;
+}
+
+.subheading {
+  margin: 1.25rem 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  max-width: 440px;
+}
+
+.narrow-card {
+  max-width: 520px;
+}
+
+.hours-add-block {
+  margin: 1.5rem 0;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--border);
+}
+
+.cabinet-back {
+  margin: 0 0 1rem;
+}
+
+.cabinet-back a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.cabinet-back a:hover {
+  color: var(--accent);
+}
+
+.cabinet-hint {
+  margin-bottom: 1rem;
+}
+
+.link-btn {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.name-link {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.name-link:hover {
+  color: var(--accent);
+}
+
+.profile-dl {
+  margin: 1.15rem 0 0;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.55rem 1.35rem;
+  font-size: 0.95rem;
+}
+
+.profile-dl dt {
+  color: var(--muted);
+  margin: 0;
+}
+
+.profile-dl dd {
+  margin: 0;
+}
+
+.hours-editor-card h2.card-heading {
+  margin-bottom: 0.35rem;
+}
+
+.period-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2rem;
+  margin: 1rem 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.period-totals strong {
+  color: var(--text);
+}
+
+.worker-profile-actions {
+  margin-top: 1rem;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}

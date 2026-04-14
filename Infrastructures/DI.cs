@@ -25,9 +25,12 @@ namespace Infrastructures
                .AddEntityFrameworkStores<AppDbContext>();
             services.Configure<AuthSettings>(configuration.GetSection("AuthSettings"));
             services.AddScoped<ITokenService,TokenService>();
-            
-               
-    
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+
+
 
             return services;
             

@@ -13,14 +13,15 @@ public class CompanyService : ICompanyService
         _companyRepository = companyRepository;
     }
 
-    public async Task<Company> CreateCompany(CompanyRequest companyRequest,User user)
+    public async Task<Company> CreateCompany(string name,string nip,string userId,User user)
     {
+      
         var company = new Company()
         {
             
-            UserId = companyRequest.UserId,
-            Name = companyRequest.Name,
-            Nip = companyRequest.Nip,
+            UserId = user.Id,
+            Name = name,
+            Nip = nip,
             User = user
 
         };
@@ -54,4 +55,8 @@ public class CompanyService : ICompanyService
         return await _companyRepository.Delete(companyId);
     }
     
+    public async Task <Company> GetByNip (string nip)
+    {
+        return await _companyRepository.ByNip(nip);
+    }
 }

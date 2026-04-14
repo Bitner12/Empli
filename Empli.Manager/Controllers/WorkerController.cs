@@ -1,4 +1,5 @@
 ﻿using Application.Abstratctions;
+using Empli.Manager.Utiles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Contracts;
@@ -12,37 +13,46 @@ namespace Empli.Manager.Controllers
     {
 
         private readonly IWorkerService _workerService;
-        public WorkerController(IWorkerService workerService)
+        private readonly IUserService _userService;
+        
+        public WorkerController(IWorkerService workerService, IUserService userService  )
         {
+            _userService = userService;
             _workerService = workerService;
+           
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Creat([FromBody] WorkerRequest worker, Guid companyId)
-        {
-            
-            await _workerService.CreatWorker(worker, companyId);
-            if (string.IsNullOrWhiteSpace(worker.FirstName))
-            {
-                return BadRequest("Имя не может быть пустым");
-            }
+        
 
-            if (string.IsNullOrWhiteSpace(worker.LastName))
-            {
-                return BadRequest("Фамилия не может быть пустая");
-            }
+        //[HttpPost("create")]
+        //public async Task<IActionResult> Create([FromBody] WorkerRequest worker)
+        //{
 
-            if (worker.CostPerHour <= 0)
-            {
-                return BadRequest("Недопустимая стоимость за час.");
-            }
-            if (worker == null)
-            {
-                return BadRequest("Worker is null");
-            }
+        //    var userId = JwtParser.GetUserIdFromHttpContext(HttpContext);
+        //    var user = await _userService.GetUser(userId);
 
-            return Ok();
-        }
+        //    await _workerService.CreatWorker(worker, user.CompanyId);
+        //    if (string.IsNullOrWhiteSpace(worker.FirstName))
+        //    {
+        //        return BadRequest("Имя не может быть пустым");
+        //    }
+
+        //    if (string.IsNullOrWhiteSpace(worker.LastName))
+        //    {
+        //        return BadRequest("Фамилия не может быть пустая");
+        //    }
+
+        //    if (worker.CostPerHour <= 0)
+        //    {
+        //        return BadRequest("Недопустимая стоимость за час.");
+        //    }
+        //    if (worker == null)
+        //    {
+        //        return BadRequest("Worker is null");
+        //    }
+
+        //    return Ok();
+        //}
 
         [HttpGet("by-name")]
         public async Task<IActionResult> GetByName(string searchName , DateTime? startDate, DateTime? endDate)

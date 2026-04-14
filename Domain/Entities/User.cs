@@ -7,7 +7,8 @@ namespace Domain.Entities
     public class User : IdentityUser
     {
         
-        public RefreshToken RefreshToken { get; set; }
+        public RefreshToken? RefreshToken { get; set; }
+        
         
         public Guid? CompanyId { get; set; }
         public Company? Company { get; set; }

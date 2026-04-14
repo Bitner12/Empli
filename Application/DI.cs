@@ -11,7 +11,12 @@ namespace Application
             services.AddScoped<IHourService,HourService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
-            
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IRefreshService, RefreshService>();
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IMangerService , MangerService>(); 
+
             return services;
         }
     }

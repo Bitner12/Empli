@@ -18,12 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Empli\Application\Application.csproj" />
-    <ProjectReference Include="..\..\Empli\Infrastructures\Infrastructures.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Controllers\EmployeeController.cs" />
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Infrastructures\Infrastructures.csproj" />
   </ItemGroup>
 
 </Project>

@@ -45,5 +45,12 @@ public class CompanyRepository : ICompanyRepository
             .ExecuteDeleteAsync();
         return companyId;
     }
+
+    public async Task<Company> ByNip(string nip)
+    {
+        return await _appDbContext.Companies
+            .Where(c => c.Nip == nip)
+            .FirstOrDefaultAsync();
+    }
     
 }

@@ -1,4 +1,4 @@
-﻿using Domain.Abstractions.Interfaces.Repositories;
+using Domain.Abstractions.Interfaces.Repositories;
 using Domain.Entities;
 using Infrastructures.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,14 @@ namespace Infrastructures.Repositories
         {
             _appDbcontext = appDbContext;
         }
-        
+
+        private static DateTime AsUtc(DateTime dt) => dt.Kind switch
+        {
+            DateTimeKind.Utc => dt,
+            DateTimeKind.Local => dt.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+        };
+
         
         
          public async Task<Worker> Create(Worker worker)
@@ -25,6 +32,16 @@ namespace Infrastructures.Repositories
              return worker;
                     
          }
+
+        public async Task<Worker> GetWorkerByPesel(string pesel)
+        {
+            return await _appDbcontext.Workers
+                .Include(w => w.Hours)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Pesel == pesel)
+                                                             ;
+
+        }
          
          
          public async Task<Worker> GetById(Guid id)
@@ -42,6 +59,7 @@ namespace Infrastructures.Repositories
          {
              return await _appDbcontext.Workers
                  .AsNoTracking()
+                 .Include(w => w.Hours)
                  .Where(w => w.CompanyId == companyId)
                  .ToListAsync();
          }
@@ -78,11 +96,13 @@ namespace Infrastructures.Repositories
                         w.LastName.Contains(search));
                 }
 
-                // 📅 Фильтр часов по датам
+                // 📅 Фильтр часов по датам, конец периода включительно
+                var startDay = startDate.HasValue ? AsUtc(startDate.Value).Date : (DateTime?)null;
+                var endDayExclusive = endDate.HasValue ? AsUtc(endDate.Value).Date.AddDays(1) : (DateTime?)null;
                 query = query.Include(w => w.Hours
                     .Where(h =>
-                        (!startDate.HasValue || h.Date >= startDate.Value) &&
-                        (!endDate.HasValue || h.Date <= endDate.Value)));
+                        (!startDay.HasValue || h.Date >= startDay.Value) &&
+                        (!endDayExclusive.HasValue || h.Date < endDayExclusive.Value)));
                 if (query == null)
                 {
                     return null;
@@ -95,12 +115,23 @@ namespace Infrastructures.Repositories
         
         
         
-        public async Task<Guid> Delete(Guid id)
+        public async Task UnlinkFromCompanyAsync(Guid workerId)
         {
             await _appDbcontext.Workers
-                .Where(w => w.Id == id)
-                .ExecuteDeleteAsync();
-            return id;
+                .Where(w => w.Id == workerId)
+                .ExecuteUpdateAsync(s => s.SetProperty(w => w.CompanyId, (Guid?)null));
+        }
+
+        public async Task<Guid> DeleteWorkerAndHoursAsync(Guid workerId)
+        {
+            await _appDbcontext.Hours.Where(h => h.WorkerId == workerId).ExecuteDeleteAsync();
+            await _appDbcontext.Workers.Where(w => w.Id == workerId).ExecuteDeleteAsync();
+            return workerId;
+        }
+
+        public async Task<Guid> Delete(Guid id)
+        {
+            return await DeleteWorkerAndHoursAsync(id);
         }
         
        
