@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import './CabinetLayout.css'
 
 export function CompanyCabinetLayout() {
-  const { profile } = useAuth()
+  const { profile, loading } = useAuth()
   const [companyName, setCompanyName] = useState('Компания')
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export function CompanyCabinetLayout() {
     })()
   }, [])
 
+  if (loading) return <div className="cabinet-loading">Загрузка…</div>
   if (!profile) return <Navigate to="/login" replace />
   if (profile.userType === UserType.Empty) return <Navigate to="/setup" replace />
   if (profile.userType === UserType.Employee) return <Navigate to="/employee" replace />
@@ -32,11 +33,11 @@ export function CompanyCabinetLayout() {
           <NavLink to="/company" end className={({ isActive }) => (isActive ? 'active' : '')}>
             Сотрудники
           </NavLink>
+          <NavLink to="/company/contractors" className={({ isActive }) => (isActive ? 'active' : '')}>
+            Контрагенты
+          </NavLink>
           <NavLink to="/company/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
             Профиль компании
-          </NavLink>
-          <NavLink to="/company/workers/new" className={({ isActive }) => (isActive ? 'active' : '')}>
-            Новый сотрудник
           </NavLink>
         </nav>
       </aside>

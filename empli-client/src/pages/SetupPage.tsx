@@ -5,7 +5,7 @@ import * as api from '../api/empliApi'
 import { UserType } from '../api/types'
 
 export function SetupPage() {
-  const { profile, refreshProfile } = useAuth()
+  const { profile, loading, refreshProfile } = useAuth()
   const nav = useNavigate()
   const location = useLocation()
   const intent = (location.state as { intent?: 'company' | 'employee' } | null)?.intent
@@ -18,6 +18,7 @@ export function SetupPage() {
   const [rate, setRate] = useState<number>(50)
   const [err, setErr] = useState<string | null>(null)
 
+  if (loading) return <div>Загрузка…</div>
   if (!profile) return <Navigate to="/login" replace />
   if (profile.userType === UserType.Company) return <Navigate to="/company" replace />
   if (profile.userType === UserType.Employee) return <Navigate to="/employee" replace />

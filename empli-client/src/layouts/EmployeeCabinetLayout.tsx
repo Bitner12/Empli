@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import './CabinetLayout.css'
 
 export function EmployeeCabinetLayout() {
-  const { profile } = useAuth()
+  const { profile, loading } = useAuth()
 
+  if (loading) return <div className="cabinet-loading">Загрузка…</div>
   if (!profile) return <Navigate to="/login" replace />
   if (profile.userType === UserType.Empty) return <Navigate to="/setup" replace />
   if (profile.userType === UserType.Company) return <Navigate to="/company" replace />

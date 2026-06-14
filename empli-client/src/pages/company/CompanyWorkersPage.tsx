@@ -54,7 +54,12 @@ export function CompanyWorkersPage() {
 
   return (
     <>
-      <h1>Сотрудники</h1>
+      <div className="row gap wrap" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Сотрудники</h1>
+        <Link to="/company/workers/new" className="btn">
+          Новый сотрудник
+        </Link>
+      </div>
       {err && <p className="error">{err}</p>}
 
       <section className="card">

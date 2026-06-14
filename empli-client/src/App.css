@@ -112,8 +112,9 @@ select:disabled {
 }
 
 .btn.secondary {
-  background: transparent;
-  color: var(--accent);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
 .btn.ghost {
@@ -124,8 +125,8 @@ select:disabled {
 
 .btn.danger {
   border-color: var(--danger);
-  color: var(--danger);
-  background: transparent;
+  color: #fff;
+  background: var(--danger);
 }
 
 .row {
@@ -299,6 +300,59 @@ fieldset {
 
 .period-totals strong {
   color: var(--text);
+}
+
+.date-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.date-group {
+  border: 1px solid var(--border, #2a2f3a);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.date-group-header {
+  padding: 0.45rem 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border, #2a2f3a);
+}
+
+.date-group-entries {
+  display: flex;
+  flex-direction: column;
+}
+
+.worker-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.worker-entry + .worker-entry {
+  border-top: 1px solid var(--border, #2a2f3a);
+}
+
+.worker-entry-name {
+  font-weight: 600;
+  flex: 1 1 160px;
+}
+
+.worker-entry-hours {
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.worker-entry-comment {
+  flex: 1 1 100%;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .worker-profile-actions {
