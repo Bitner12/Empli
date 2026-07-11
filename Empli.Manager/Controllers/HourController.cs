@@ -53,24 +53,23 @@ namespace Empli.Manager.Controllers
         }
        
         [HttpGet("period")]
-        public async Task<IActionResult> GetHoursPeriod(Guid id, DateTime dateStart, DateTime dateEnd)
+        public async Task<IActionResult> GetHoursPeriod(Guid id, DateTime dateStart, DateTime dateEnd, Guid? contractorId = null)
         {
             if (dateEnd < dateStart)
             {
                 return BadRequest("End date cannot be less than start date");
             }
-            var hours = await _hourService.GetHours(id, dateStart, dateEnd);
+            var hours = await _hourService.GetHours(id, dateStart, dateEnd, contractorId);
             return Ok(hours);
-            
         }
-        
-        
+
+
         [HttpPatch]
-        public async Task<ActionResult<HourDto>> UpdateHour(Guid id , float hour , DateTime date)
+        public async Task<ActionResult<HourDto>> UpdateHour(Guid id, float hour, DateTime date, Guid? contractorId = null, string? comment = null)
         {
             try
             {
-                await _hourService.UpdateHour(id, hour, date);
+                await _hourService.UpdateHour(id, hour, date, contractorId, comment);
             }
             catch (InvalidOperationException ex)
             {
@@ -78,9 +77,16 @@ namespace Empli.Manager.Controllers
             }
 
             return Ok();
-            
+
 
         }
+        [HttpGet("byContractor")]
+        public async Task<IActionResult> GetByContractor(Guid contractorId, DateTime? dateStart = null, DateTime? dateEnd = null)
+        {
+            var hours = await _hourService.GetHoursByContractor(contractorId, dateStart, dateEnd);
+            return Ok(hours);
+        }
+
         [HttpDelete]
         public async Task<IActionResult> DeleteHour(Guid id , DateTime date)
         {

@@ -49,25 +49,26 @@ namespace Application.Services
             return await _hourRepository.Get(workerId);
         }
 
-        public async Task<List<Hour>> GetHours(Guid workerId, DateTime startDate, DateTime endDate)
+        public async Task<List<Hour>> GetHours(Guid workerId, DateTime startDate, DateTime endDate, Guid? contractorId = null)
         {
-            return await _hourRepository.GetByDate(workerId, startDate, endDate);
+            return await _hourRepository.GetByDate(workerId, startDate, endDate, contractorId);
         }
-        
-        
-        public async Task<Guid> UpdateHour(Guid id, float hours, DateTime date)
+
+        public async Task<Guid> UpdateHour(Guid id, float hours, DateTime date, Guid? contractorId, string? comment)
         {
             EnsureHourDateNotAfterToday(date);
-            await _hourRepository.Update(id, hours, date);
+            await _hourRepository.Update(id, hours, date, contractorId, comment);
             return id;
-
         }
         
-        public async Task<Guid> DeleteHour(Guid id, DateTime date) 
+        public async Task<Guid> DeleteHour(Guid id, DateTime date)
         {
             await _hourRepository.Delete(id, date);
             return id;
         }
+
+        public Task<List<Hour>> GetHoursByContractor(Guid contractorId, DateTime? startDate, DateTime? endDate)
+            => _hourRepository.GetByContractor(contractorId, startDate, endDate);
         
     }
 }

@@ -15,7 +15,8 @@ namespace Application
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IRefreshService, RefreshService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<IMangerService , MangerService>(); 
+            services.AddScoped<IMangerService, MangerService>();
+            services.AddScoped<IContractorService, ContractorService>();
 
             return services;
         }

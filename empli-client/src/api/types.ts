@@ -38,11 +38,22 @@ export interface Company {
   userId: string | null
 }
 
+export interface Contractor {
+  id: string
+  name: string
+  companyId: string
+  ratePerHour: number
+}
+
 export interface Hour {
   id: string
   date: string
   hours: number
   workerId?: string
+  contractorId?: string | null
+  contractorName?: string | null
+  comment?: string | null
+  worker?: { id: string; firstName: string; lastName: string } | null
 }
 
 export interface Worker {

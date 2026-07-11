@@ -12,7 +12,11 @@ public class HourConfiguration : IEntityTypeConfiguration<Hour>
         builder.HasOne(h => h.Worker)
             .WithMany(w => w.Hours)
             .HasForeignKey(h => h.WorkerId);
-        
+        builder.HasOne(h => h.Contractor)
+            .WithMany(c => c.Hours)
+            .HasForeignKey(h => h.ContractorId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
     
 }

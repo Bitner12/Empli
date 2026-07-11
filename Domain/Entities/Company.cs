@@ -13,5 +13,5 @@ public class Company
     public User? User { get; set; }
     
     public List<Worker>? Workers { get; set; }
-    
+    public List<Contractor>? Contractors { get; set; }
 }

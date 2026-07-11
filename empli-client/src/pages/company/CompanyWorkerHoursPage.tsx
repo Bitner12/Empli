@@ -1,27 +1,30 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import * as api from '../../api/empliApi'
-import type { Worker } from '../../api/types'
+import type { Contractor, Worker } from '../../api/types'
 import { HoursEditor } from '../../components/HoursEditor'
 
 export function CompanyWorkerHoursPage() {
   const { workerId } = useParams<{ workerId: string }>()
   const [worker, setWorker] = useState<Worker | null>(null)
+  const [contractors, setContractors] = useState<Contractor[]>([])
   const [err, setErr] = useState<string | null>(null)
 
-  async function load() {
-    if (!workerId) return
-    try {
-      const w = await api.getWorkerById(workerId)
-      setWorker(w)
-      setErr(null)
-    } catch {
-      setErr('Не удалось загрузить сотрудника')
-    }
-  }
-
   useEffect(() => {
-    void load()
+    if (!workerId) return
+    void (async () => {
+      try {
+        const [w, list] = await Promise.all([
+          api.getWorkerById(workerId),
+          api.getContractorsByWorker(workerId),
+        ])
+        setWorker(w)
+        setContractors(list)
+        setErr(null)
+      } catch {
+        setErr('Не удалось загрузить данные')
+      }
+    })()
   }, [workerId])
 
   if (!workerId) return <p className="error">Некорректная ссылка</p>
@@ -39,6 +42,8 @@ export function CompanyWorkerHoursPage() {
         workerId={workerId}
         title={title}
         hourlyRate={worker?.costPerHour ?? 0}
+        contractors={contractors}
+        showContractorFilter
       />
     </>
   )

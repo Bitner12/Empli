@@ -1,6 +1,7 @@
 import api, { rawClient, setTokens } from './http'
 import type {
   Company,
+  Contractor,
   EmployeeProfileResponse,
   Hour,
   LoginResponse,
@@ -124,31 +125,71 @@ export async function getHoursAll(workerId: string) {
   return data
 }
 
-export async function getHoursPeriod(workerId: string, dateStart: string, dateEnd: string) {
-  const q = new URLSearchParams({
-    id: workerId,
-    dateStart,
-    dateEnd,
-  })
+export async function getHoursPeriod(
+  workerId: string,
+  dateStart: string,
+  dateEnd: string,
+  contractorId?: string,
+) {
+  const q = new URLSearchParams({ id: workerId, dateStart, dateEnd })
+  if (contractorId) q.set('contractorId', contractorId)
   const { data } = await api.get<Hour[]>(`/HourContoller/period?${q.toString()}`)
   return data
 }
 
-export async function createHour(workerId: string, date: string, hours: number) {
-  await api.post('/HourContoller', {
-    workerId,
-    date,
-    hours,
-  })
+export async function createHour(
+  workerId: string,
+  date: string,
+  hours: number,
+  contractorId?: string | null,
+  comment?: string | null,
+) {
+  await api.post('/HourContoller', { workerId, date, hours, contractorId, comment })
 }
 
-export async function updateHour(workerId: string, date: string, hours: number) {
-  const q = new URLSearchParams({
-    id: workerId,
-    hour: String(hours),
-    date,
-  })
+export async function updateHour(
+  workerId: string,
+  date: string,
+  hours: number,
+  contractorId?: string | null,
+  comment?: string | null,
+) {
+  const q = new URLSearchParams({ id: workerId, hour: String(hours), date })
+  if (contractorId) q.set('contractorId', contractorId)
+  if (comment !== undefined && comment !== null) q.set('comment', comment)
   await api.patch(`/HourContoller?${q.toString()}`)
+}
+
+export async function getContractorsByCompany() {
+  const { data } = await api.get<Contractor[]>('/Contractor/list')
+  return data
+}
+
+export async function getContractorsByWorker(workerId: string) {
+  const { data } = await api.get<Contractor[]>(`/Contractor/byWorker?workerId=${encodeURIComponent(workerId)}`)
+  return data
+}
+
+export async function createContractor(name: string, ratePerHour: number) {
+  const { data } = await api.post<Contractor>('/Contractor', { name, ratePerHour })
+  return data
+}
+
+export async function updateContractor(id: string, name: string, ratePerHour: number) {
+  const { data } = await api.put<Contractor>(`/Contractor?id=${encodeURIComponent(id)}`, { name, ratePerHour })
+  return data
+}
+
+export async function deleteContractor(id: string) {
+  await api.delete(`/Contractor?id=${encodeURIComponent(id)}`)
+}
+
+export async function getHoursByContractor(contractorId: string, dateStart?: string, dateEnd?: string) {
+  const q = new URLSearchParams({ contractorId })
+  if (dateStart) q.set('dateStart', dateStart)
+  if (dateEnd) q.set('dateEnd', dateEnd)
+  const { data } = await api.get<Hour[]>(`/HourContoller/byContractor?${q.toString()}`)
+  return data
 }
 
 export async function deleteHour(workerId: string, date: string) {

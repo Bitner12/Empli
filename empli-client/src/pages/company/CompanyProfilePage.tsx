@@ -24,9 +24,7 @@ export function CompanyProfilePage() {
     }
   }, [])
 
-  useEffect(() => {
-    void load()
-  }, [load])
+  useEffect(() => { void load() }, [load])
 
   async function saveCompany(e: React.FormEvent) {
     e.preventDefault()

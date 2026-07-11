@@ -27,43 +27,52 @@ namespace Infrastructures.Repositories
 
         public async Task<Hour> Create(HourRequest hour)
         {
-            var hourRequest = new Hour()
+            var entity = new Hour
             {
                 Date = AsUtc(hour.Date),
                 Hours = hour.Hours,
-                WorkerId = hour.WorkerId
+                WorkerId = hour.WorkerId,
+                ContractorId = hour.ContractorId,
+                Comment = hour.Comment,
             };
 
-            await _appDbcontext.Hours.AddAsync(hourRequest);
+            await _appDbcontext.Hours.AddAsync(entity);
             await _appDbcontext.SaveChangesAsync();
-            return hourRequest;
+            return entity;
         }
 
         public async Task<List<Hour>> Get(Guid workerId)
         {
-           return await  _appDbcontext.Hours
+            return await _appDbcontext.Hours
+                .Include(h => h.Contractor)
                 .Where(h => h.WorkerId == workerId)
                 .ToListAsync();
         }
 
-        public async Task<List<Hour>> GetByDate(Guid workerId, DateTime startDate, DateTime endDate)
+        public async Task<List<Hour>> GetByDate(Guid workerId, DateTime startDate, DateTime endDate, Guid? contractorId = null)
         {
             var startDay = AsUtc(startDate).Date;
             var endDayExclusive = AsUtc(endDate).Date.AddDays(1);
-            return await _appDbcontext.Hours
+            var query = _appDbcontext.Hours
+                .Include(h => h.Contractor)
                 .Where(h => h.WorkerId == workerId)
-                .Where(h => h.Date >= startDay && h.Date < endDayExclusive)
-                .ToListAsync();
+                .Where(h => h.Date >= startDay && h.Date < endDayExclusive);
+
+            if (contractorId.HasValue)
+                query = query.Where(h => h.ContractorId == contractorId.Value);
+
+            return await query.ToListAsync();
         }
-        
-        public async Task<Guid> Update(Guid id, float hours, DateTime date)
+
+        public async Task<Guid> Update(Guid id, float hours, DateTime date, Guid? contractorId, string? comment)
         {
             var d = AsUtc(date);
             await _appDbcontext.Hours
                 .Where(h => h.WorkerId == id && h.Date == d)
                 .ExecuteUpdateAsync(s => s
-                .SetProperty(h => h.Hours, hours));
-                
+                    .SetProperty(h => h.Hours, hours)
+                    .SetProperty(h => h.ContractorId, contractorId)
+                    .SetProperty(h => h.Comment, comment));
 
             return id;
         }
@@ -84,6 +93,26 @@ namespace Infrastructures.Repositories
             return await _appDbcontext.Hours.AnyAsync(
                 h => h.WorkerId == workerId && h.Date >= day && h.Date < next);
         }
-       
+
+        public async Task<List<Hour>> GetByContractor(Guid contractorId, DateTime? startDate, DateTime? endDate)
+        {
+            var query = _appDbcontext.Hours
+                .Include(h => h.Worker)
+                .Include(h => h.Contractor)
+                .Where(h => h.ContractorId == contractorId);
+
+            if (startDate.HasValue)
+            {
+                var start = AsUtc(startDate.Value).Date;
+                query = query.Where(h => h.Date >= start);
+            }
+            if (endDate.HasValue)
+            {
+                var endExclusive = AsUtc(endDate.Value).Date.AddDays(1);
+                query = query.Where(h => h.Date < endExclusive);
+            }
+
+            return await query.OrderBy(h => h.Date).ToListAsync();
+        }
     }
 }

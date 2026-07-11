@@ -4,6 +4,8 @@ import './App.css'
 import { CompanyCabinetLayout } from './layouts/CompanyCabinetLayout'
 import { EmployeeCabinetLayout } from './layouts/EmployeeCabinetLayout'
 import { CompanyAddWorkerPage } from './pages/company/CompanyAddWorkerPage'
+import { CompanyContractorDetailPage } from './pages/company/CompanyContractorDetailPage'
+import { CompanyContractorsPage } from './pages/company/CompanyContractorsPage'
 import { CompanyProfilePage } from './pages/company/CompanyProfilePage'
 import { CompanyWorkerHoursPage } from './pages/company/CompanyWorkerHoursPage'
 import { CompanyWorkerProfilePage } from './pages/company/CompanyWorkerProfilePage'
@@ -30,6 +32,8 @@ export default function App() {
           <Route path="workers/new" element={<CompanyAddWorkerPage />} />
           <Route path="workers/:workerId" element={<CompanyWorkerProfilePage />} />
           <Route path="workers/:workerId/hours" element={<CompanyWorkerHoursPage />} />
+          <Route path="contractors" element={<CompanyContractorsPage />} />
+          <Route path="contractors/:contractorId" element={<CompanyContractorDetailPage />} />
         </Route>
 
         <Route path="/employee" element={<EmployeeCabinetLayout />}>

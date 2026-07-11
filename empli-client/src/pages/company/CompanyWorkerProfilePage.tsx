@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react'
+
+
 import { Link, useParams } from 'react-router-dom'
 import * as api from '../../api/empliApi'
 import type { Worker } from '../../api/types'
+import { useConfirm } from '../../components/ConfirmDialog'
 
 export function CompanyWorkerProfilePage() {
   const { workerId } = useParams<{ workerId: string }>()
+  const { confirm, confirmDialog } = useConfirm()
   const [worker, setWorker] = useState<Worker | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [editing, setEditing] = useState(false)
@@ -60,7 +64,7 @@ export function CompanyWorkerProfilePage() {
 
   async function removeWorker() {
     if (!workerId) return
-    if (!window.confirm('Удалить сотрудника из компании?')) return
+    if (!(await confirm('Удалить сотрудника из компании?'))) return
     try {
       await api.deleteCompanyWorker(workerId)
       window.location.href = '/company'
@@ -73,6 +77,7 @@ export function CompanyWorkerProfilePage() {
 
   return (
     <>
+      {confirmDialog}
       <p className="cabinet-back">
         <Link to="/company">← К списку сотрудников</Link>
       </p>

@@ -28,6 +28,7 @@ namespace Infrastructures
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IContractorRepository, ContractorRepository>();
 
 
 

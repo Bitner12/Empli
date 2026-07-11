@@ -17,6 +17,7 @@ namespace Infrastructures.Contexts
         public DbSet<Worker> Workers { get; set; }
         public DbSet<Hour> Hours { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Contractor> Contractors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -26,6 +27,7 @@ namespace Infrastructures.Contexts
             builder.ApplyConfiguration(new WorkerConfiguration());
             builder.ApplyConfiguration(new HourConfiguration());
             builder.ApplyConfiguration(new EmployeeConfiguration());
+            builder.ApplyConfiguration(new ContractorConfiguration());
         }
     }
 }

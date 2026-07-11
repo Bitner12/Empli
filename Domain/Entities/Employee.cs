@@ -8,13 +8,13 @@ public class Employee
 
     [Required]
     [StringLength(11, MinimumLength = 11)]
-    public string Pesel { get; set; }
+    public string? Pesel { get; set; }
 
-    public string? FirstName { get; set; } 
-    
-    public string? LastName { get; set; } 
-    
-    public string? UserId {get; set;}
+    public string? FirstName { get; set; }
+
+    public string? LastName { get; set; }
+
+    public string? UserId { get; set; }
 
     public User? User { get; set; }
 
@@ -23,5 +23,4 @@ public class Employee
     public Worker? Worker { get; set; }
 
     public List<Hour>? Hours { get; set; }
-    
 }

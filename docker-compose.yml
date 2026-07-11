@@ -1,11 +1,13 @@
 ﻿services:
   db:
-    image: postgres:15-alpine
+    image: postgres:17.9
     container_name: postgres_dev
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
-      POSTGRES_DB: my_project_db
+      POSTGRES_DB: 
+        
+        
     ports:
       - "5432:5432"
     volumes:
@@ -20,7 +22,7 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DisableHttpsRedirection: "true"
-      ConnectionStrings__psql: Host=db;Port=5432;Database=my_project_db;Username=admin;Password=password123;Ssl Mode=Disable;
+      ConnectionStrings__psql: Host=db;Port=5432;Database=my_project_db;Username=postgres;Password=password123;Ssl Mode=Disable;
     ports:
       - "5275:8080"
     depends_on:

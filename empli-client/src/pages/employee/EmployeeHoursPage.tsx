@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import * as api from '../../api/empliApi'
-import type { EmployeeProfileResponse } from '../../api/types'
+import type { Contractor, EmployeeProfileResponse } from '../../api/types'
 import { HoursEditor } from '../../components/HoursEditor'
 
 export function EmployeeHoursPage() {
   const [emp, setEmp] = useState<EmployeeProfileResponse | null>(null)
+  const [contractors, setContractors] = useState<Contractor[]>([])
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState<string | null>(null)
 
@@ -13,6 +14,14 @@ export function EmployeeHoursPage() {
       try {
         const data = await api.getEmployee()
         setEmp(data)
+        if (data.workerId) {
+          try {
+            const list = await api.getContractorsByWorker(data.workerId)
+            setContractors(list)
+          } catch {
+            // контрагенты не обязательны
+          }
+        }
       } catch {
         setErr('Не удалось загрузить профиль')
       } finally {
@@ -32,6 +41,7 @@ export function EmployeeHoursPage() {
         workerId={emp.workerId}
         title="Учёт рабочего времени"
         hourlyRate={emp.costPerHour ?? 0}
+        contractors={contractors}
       />
     </>
   )
